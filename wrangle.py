@@ -1,10 +1,15 @@
 #Imports
 
-import pandas as pd 
-from env import username, password, get_db_url
-import os
-import seaborn as sns
+import pandas as pd
 import numpy as np
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
+from sklearn.model_selection import train_test_split
+
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -68,17 +73,26 @@ def get_zillow_data(filename="zillow.csv"):
 
 
 def wrangle_zillow(df):
+    # rename fips to county
     df = df.rename(columns={'fips': 'county'})
     
+    #drop all nulls
     df = df.dropna()
     
+    # making list to change dtype to integers
     make_ints = ['bedrooms', 'sqft', 'tax_value', 'year_built']
 
     for col in make_ints:
         df[col] = df[col].astype(int)
-        
+
+    # giving couty names instead of numbers    
     df.county = df.county.map({6037:'la', 6059:'orange', 6111:'ventura'})
     
+    # Create dummy variables for the county column
+    dummy_df = pd.get_dummies(df['county'], drop_first=True)
+    df = pd.concat([df, dummy_df], axis=1)
+
+    # dropping outliers
     df = df[df.bedrooms.between(1,7)]
     df = df[df.bathrooms.between(1,6)]
     df = df[df.sqft <= df.sqft.mean() + (4 * df.sqft.std())]
@@ -86,6 +100,25 @@ def wrangle_zillow(df):
     df = df [df.tax_value < df.tax_value.quantile(.95)]
     
     return df
+
+
+
+
+#SPLIT FUNCTION
+
+def split_function(df):
+    '''
+    Take in a data frame and returns train, validate, test subset data frames
+    '''
+    train, test = train_test_split(df,
+                              test_size=0.20,
+                              random_state=123,
+                                  )
+    train, validate = train_test_split(train,
+                                  test_size=.25,
+                                  random_state=123,
+                                      )
+    return train, validate, test
 
 
 
