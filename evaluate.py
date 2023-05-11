@@ -52,6 +52,8 @@ def regression_errors(y, yhat):
     
     return SSE, ESS, TSS, MSE, RMSE
 
+
+
 def baseline_mean_errors(y):
     '''
     send in: 
@@ -73,6 +75,9 @@ def baseline_mean_errors(y):
     print(f'RMSE Baseline:', rmse_baseline)
     
     return SSE_baseline, MSE_baseline, RMSE_baseline
+
+
+
 
 def better_than_baseline(y, yhat, baseline):
     '''
