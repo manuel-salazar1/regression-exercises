@@ -68,7 +68,7 @@ def scale_data(train,
 
 # create function to initiate X_y train, validate, test
 
-def Xy_train_val_test(train, validate, test, target_variable):
+def Xy_train_val_test(train, validate, test, target_variable, drop_cols):
     """
     input train, validate, test, after using split function()
     input target_variable as string
@@ -80,8 +80,8 @@ def Xy_train_val_test(train, validate, test, target_variable):
     X_train, X_validate, X_test, y_train, y_validate, y_test
     """
     
-    baseline_accuracy = train[target_variable].value_counts().max() / train[target_variable].value_counts().sum()
-    print(f'Baseline Accuracy: {baseline_accuracy:.2%}')
+    baseline_accuracy = train[target_variable].mean()
+    print(f'Baseline Accuracy: {baseline_accuracy}')
     
     X_train = train.select_dtypes(exclude=['object']).drop(columns=[target_variable]).drop(columns=drop_cols)
     X_validate = validate.select_dtypes(exclude=['object']).drop(columns=[target_variable]).drop(columns=drop_cols)
